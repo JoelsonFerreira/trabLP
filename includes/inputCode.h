@@ -103,19 +103,22 @@ void simulando(string tokenKey, string args[2])
         map<string, struct Ocupados>::iterator it = vOc.find(args[0]);
         struct Ocupados b = it->second;
 
-        vOc.erase(it);
-
-        int c = b.comeco + b.quant;
-
-        if(vDes.find(c) != vDes.end())
+        if(it != vOc.end())
         {
-            int d = vDes[vDes.find(c)->first];
-            vDes.erase(vDes.find(c));
-            vDes[b.comeco] = b.comeco + d;
-        }
-        else
-        {
-            vDes[b.comeco] = b.quant;
+            vOc.erase(it);
+
+            int c = b.comeco + b.quant;
+
+            if(vDes.find(c) != vDes.end())
+            {
+                int d = vDes[vDes.find(c)->first];
+                vDes.erase(vDes.find(c));
+                vDes[b.comeco] = b.comeco + d;
+            }
+            else
+            {
+                vDes[b.comeco] = b.quant;
+            }
         }
     }
     else if(tokenKey == "heap")
