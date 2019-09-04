@@ -1,0 +1,7 @@
+<programa>  ::= <instrucao>+
+<instrucao> ::= <set_heap> | <new> | <del> | <exibe> | <atribui>
+<set_heap>  ::= 'heap { 'first | 'best | 'worst | 'next }
+<new>       ::= 'new <id> <number>
+<del>       ::= 'del <id>
+<exibe>     ::= 'exibe
+<atribui>   ::= <id> '= <id>

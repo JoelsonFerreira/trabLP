@@ -1,0 +1,7 @@
+new a 5
+new b 10
+new c 15
+new d 30
+del d
+exibe
+
