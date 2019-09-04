@@ -83,7 +83,7 @@ void simulando(string tokenKey, string args[2])
         beginPos = it->first;
         amount = it->second;
 
-        for(; it != vDes.end() && it->second < c; it++)
+        for(; it != vDes.end() && it->second < argInt; it++)
         {
             beginPos = it->first;
             amount = it->second;
