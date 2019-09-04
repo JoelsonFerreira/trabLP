@@ -62,34 +62,44 @@ int sizeKeyWord(string str)
     return 0;
 }
 
+/*
+ *
+ * receebe uma palavra chave e seus argumentos... 
+ * realiza a simulacao feita em vOc(ED que representea a memoria desocupada) 
+ * e vDes(ED que representa a memoria desocupada)
+ *
+*/
 void simulando(string tokenKey, string args[2])
 {
+    // palavra chave new, aloca um pedaço de memoria do tamanho args[1] chamado pelo id args[0]
     if(tokenKey == "new")
     {
-        int c = stoi(args[1]);
+        int argInt = stoi(args[1]);
 
+        // pegando primeira posicao de memoria disponivel (first fit)
         map<int, int>::iterator it = vDes.begin();
-        int a, b;
+        int beginPos, amount;
 
-        a = it->first;
-        b = it->second;
+        beginPos = it->first;
+        amount = it->second;
 
         for(; it != vDes.end() && it->second < c; it++)
         {
-            a = it->first;
-            b = it->second;
+            beginPos = it->first;
+            amount = it->second;
         }
 
+        // caso exista uma posicao disponivel...
         if(it != vDes.end())
         {
             // Desocupa
             vDes.erase(it);
-            vDes[a + c] = b - c;
+            vDes[beginPos + argInt] = amount - argInt;
 
             // Ocupa
             struct Ocupados aux;
-            aux.comeco = a;
-            aux.quant  = c;
+            aux.comeco = beginPos;
+            aux.quant  = argInt;
 
             vOc[args[0]] = aux;
         }
@@ -98,26 +108,31 @@ void simulando(string tokenKey, string args[2])
             cout << "Espaco insuficiente para alocar " << args[0] << "!" << endl;
         }
     }
+    // palavra chave "del", apaga o espaco de memoria com o id = args[0]
     else if(tokenKey == "del")
     {
+        // buscando o id
         map<string, struct Ocupados>::iterator it = vOc.find(args[0]);
-        struct Ocupados b = it->second;
+        struct Ocupados aux = it->second;
 
+        // se o id existe nos ocupados...
         if(it != vOc.end())
         {
-            vOc.erase(it);
+            // apaga
+            vOc.erase(it);  
 
-            int c = b.comeco + b.quant;
-
-            if(vDes.find(c) != vDes.end())
+            // mescla com espaco de memoria que ja estava livre caso seja conticua
+            int endPos = aux.comeco + aux.quant;
+            if(vDes.find(endPos) != vDes.end())
             {
-                int d = vDes[vDes.find(c)->first];
-                vDes.erase(vDes.find(c));
-                vDes[b.comeco] = b.comeco + d;
+                int d = vDes[vDes.find(endPos)->first];
+                vDes.erase(vDes.find(endPos));
+                vDes[aux.comeco] = aux.comeco + d;
             }
+            // caso nao seja continua
             else
             {
-                vDes[b.comeco] = b.quant;
+                vDes[aux.comeco] = aux.quant;
             }
         }
     }
@@ -146,6 +161,10 @@ void simulando(string tokenKey, string args[2])
     
 }
 
+
+/*
+ * separa as palavras chaves dos argumentos e chama a funcao simulando
+ */
 int iTokens(string fname)
 {
     /*  tokens  */
