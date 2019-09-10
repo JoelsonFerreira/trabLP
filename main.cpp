@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include<cstdlib>
 
 using namespace std;
 
@@ -20,7 +21,7 @@ int main(int argc, char *argv[])
         cout << "Voce nao esta usando o programa corretamente, para ajuda use o comando 'main -h'" << endl;
         return 1;
     }
-    
+
     //lendo os argumentos
     for(int i = 1; i < argc; i++)
     {
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
             {
                 cout << "Arquivo " << argv[i] << " nao encontrado!!!" << endl;
             }
-            
+
         }
         else
         {

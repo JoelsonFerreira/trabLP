@@ -17,16 +17,16 @@ using namespace std;
 #define SIZE_KEYWORD2 1
 
 // Palavras chaves do codigo
-string keyWord0[1] = 
+string keyWord0[1] =
 {
     "exibe"
 };
-string keyWord1[SIZE_KEYWORD1] = 
+string keyWord1[SIZE_KEYWORD1] =
 {
     "del",
     "heap"
 };
-string keyWord2[SIZE_KEYWORD2] = 
+string keyWord2[SIZE_KEYWORD2] =
 {
     "new"
 };
@@ -59,13 +59,13 @@ int sizeKeyWord(string str)
             return 2;
         }
     }
-    return 0;
+    return 2;
 }
 
 /*
  *
- * receebe uma palavra chave e seus argumentos... 
- * realiza a simulacao feita em vOc(ED que representea a memoria desocupada) 
+ * receebe uma palavra chave e seus argumentos...
+ * realiza a simulacao feita em vOc(ED que representea a memoria desocupada)
  * e vDes(ED que representa a memoria desocupada)
  *
 */
@@ -74,7 +74,7 @@ void simulando(string tokenKey, string args[2])
     // palavra chave new, aloca um pedaço de memoria do tamanho args[1] chamado pelo id args[0]
     if(tokenKey == "new")
     {
-        int argInt = stoi(args[1]);
+        int argInt = atoi(args[1].c_str());
 
         // pegando primeira posicao de memoria disponivel (first fit)
         map<int, int>::iterator it = vDes.begin();
@@ -119,46 +119,59 @@ void simulando(string tokenKey, string args[2])
         if(it != vOc.end())
         {
             // apaga
-            vOc.erase(it);  
+            vOc.erase(it);
 
             // mescla com espaco de memoria que ja estava livre caso seja conticua
             int endPos = aux.comeco + aux.quant;
             if(vDes.find(endPos) != vDes.end())
             {
                 int d = vDes[vDes.find(endPos)->first];
-                vDes.erase(vDes.find(endPos));
-                vDes[aux.comeco] = aux.comeco + d;
+                cout << "AQUI: " << d << endl;
+                 vDes.erase(vDes.find(endPos));
+                vDes[aux.comeco] = aux.quant + d;
             }
             // caso nao seja continua
             else
             {
                 vDes[aux.comeco] = aux.quant;
             }
+            for(map<string,struct Ocupados>::iterator da =vOc.begin();da !=vOc.end();da++){
+                if(it->second.comeco==da->second.comeco && it->second.quant==da->second.quant){
+                    da->second.comeco=da->second.quant=-1;
+                }
+            }
         }
     }
     else if(tokenKey == "heap")
     {
 
+
     }
     else if(tokenKey == "exibe")
     {
         cout << "============== DESOCUPADOS ================" << endl;
-        for(auto it = vDes.begin(); it != vDes.end(); it++)
+        for(map<int,int>::iterator it = vDes.begin(); it != vDes.end(); it++)
         {
             cout << "POS: " << it->first << "\tQUANT: " << it->second << endl;
         }
         cout << endl << "==============   OCUPADOS   ================" << endl;
-        for(auto it = vOc.begin(); it != vOc.end(); it++)
+        for(map<string, struct Ocupados>::iterator it = vOc.begin(); it != vOc.end(); it++)
         {
             cout << "ID: " << it->first << "\tPOS: " << it->second.comeco << "\tQUANT: " << it->second.quant << endl;
         }
         cout << endl << endl;
     }
-    else // atribui
+    else if(args[0]=="=") // atribui
     {
-        
+        map<string, struct Ocupados>::iterator re = vOc.find(args[1]);
+        if (re != vOc.end()){
+            vOc[tokenKey]= re->second;
+            cout <<"AQUIII"<<endl;
+        }else{
+            cout << args[1] << " nao existe." << endl;
+        }
     }
-    
+
 }
 
 
@@ -169,21 +182,22 @@ int iTokens(string fname)
 {
     /*  tokens  */
     ifstream file(fname);
-    
+
     if(file.is_open())
     {
         while(!file.eof())
         {
             string tokenKey;
-            
+
             file >> tokenKey;
-            //cout << "Key Word - " << tokenKey << endl;
+            cout << "Key Word - " << tokenKey << endl;
 
             string tokenArg[2];
-            
+
             for(int i = 0; i < sizeKeyWord(tokenKey); i++)
             {
                 file >> tokenArg[i];
+                cout << tokenArg[i] << endl;
             }
 
             simulando(tokenKey, tokenArg);
@@ -196,5 +210,5 @@ int iTokens(string fname)
     {
         return 0;
     }
-    /*          */ 
+    /*          */
 }
