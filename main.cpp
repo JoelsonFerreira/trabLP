@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
     bool is_file = true;
 
     vDes[0] = 50;
+    atual   = vDes.begin();
 
     // "compilamos" o codigo com 'main arquivo.hm [-o logOutput.txt]'
     if(argc < 2)
@@ -29,7 +30,6 @@ int main(int argc, char *argv[])
         if(argv[i][0] != '-' && is_file){
             if(iTokens(argv[i]))
             {
-                //arquivo
                 cout << endl << "[Fim...]" << endl;
             }
             else
