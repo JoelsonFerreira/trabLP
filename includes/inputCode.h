@@ -1,6 +1,6 @@
+#include <iostream>
 #include <fstream>
 #include <string>
-#include <iostream>
 #include <map>
 
 struct Ocupados
@@ -11,9 +11,11 @@ struct Ocupados
 enum Modos {FIRST, NEXT, BEST, WORST};
 Modos modo = FIRST;
 
+// Estruturas que representarão nosso heap
 map<string, struct Ocupados> vOc;
 map<int, int> vDes;
-map<int, int>::iterator atual;
+
+map<int, int>::iterator atual; // para o heap next
 
 using namespace std;
 
@@ -22,7 +24,7 @@ using namespace std;
 #define SIZE_KEYWORD2 1
 
 // Palavras chaves do codigo
-string keyWord0[1] =
+string keyWord0[SIZE_KEYWORD0] =
 {
     "exibe"
 };
@@ -44,7 +46,7 @@ string heap[4]=
 };
 
 
-// recebe 2 numeros a e b, e retorna o maior deles
+// recebe 2 numeros(inteiros) a e b, e retorna o maior deles
 int max(int a, int b)
 {
     if(a > b)   return a;
@@ -72,6 +74,7 @@ int sizeKeyWord(string str)
     return 2;
 }
 
+// coloca na lista ocupado, e tira da lista desocupado
 map<int,int>::iterator ocupa(map<int, int>::iterator it, int beginPos, int amount, int argInt, string id)
 {
     // Ocupa
@@ -90,6 +93,7 @@ map<int,int>::iterator ocupa(map<int, int>::iterator it, int beginPos, int amoun
     return vDes.find(beginPos + argInt);
 }
 
+// aloca no First
 void newFirst(string args[2])
 {
     int argInt = atoi(args[1].c_str());
@@ -110,16 +114,6 @@ void newFirst(string args[2])
     // caso exista uma posicao disponivel...
     if(it != vDes.end())
     {
-        // // Desocupa
-        // vDes.erase(it);
-        // vDes[beginPos + argInt] = amount - argInt;
-
-        // // Ocupa
-        // struct Ocupados aux;
-        // aux.comeco = beginPos;
-        // aux.quant  = argInt;
-
-        // vOc[args[0]] = aux;
         ocupa(it, beginPos, amount, argInt, args[0]);
     }
     else
@@ -128,6 +122,7 @@ void newFirst(string args[2])
     }
 }
 
+// aloca no Next
 void newNext (string args[2])
 {
     cout << atual->first << " -> " << atual->second << endl;
@@ -153,6 +148,7 @@ void newNext (string args[2])
     atual = ocupa(aux,aux->first,aux->second,argInt,args[0]);
 }
 
+// aloca no Best
 void newBest(string args[2])
 {
     int argInt = atoi(args[1].c_str());
@@ -176,15 +172,6 @@ void newBest(string args[2])
     // caso exista uma posicao disponivel...
     if(amount >= argInt)
     {
-        // // Ocupa
-        // vDes.erase(it);
-        // vDes[beginPos + argInt] = amount - argInt;
-
-        // struct Ocupados aux;
-        // aux.comeco = beginPos;
-        // aux.quant  = argInt;
-
-        // vOc[args[0]] = aux;
         ocupa(it, beginPos, amount, argInt, args[0]);
     }
     else
@@ -192,33 +179,41 @@ void newBest(string args[2])
         cout << "Espaco insuficiente para alocar " << args[0] << "!" << endl;
     }
 }
-void newWorst(string[2])
+
+// aloca no Worst
+void newWorst(string args[2])
 {
     int argInt = atoi(args[1].c_str());
+
     // pegando primeira posicao de memoria disponivel (first fit)
     map<int, int>::iterator it = vDes.begin();
     int beginPos, amount;
 
     beginPos = it->first;
     amount = it->second;
-    for(map<int,int>::iterator aux = vDes.begin();aux !=vDes.end();aux++)
+
+    for(map<int, int>::iterator aux = vDes.begin(); aux != vDes.end(); aux++)
     {
-        if(aux->second >= argInt && aux->second = amount)//se o tamanho de aux é igual amount quer dizer q é o maior espaço possivel
+        if(aux->second >= argInt && aux->second > amount)
         {
             it = aux;
             beginPos = aux->first;
             amount = aux->second;
-        }
-        if(amount >= argInt)
-        {
-            ocupa(it, beginPos, amount, argInt, args[0]);
-        }
-        else
-        {
-            cout << "Espaco insuficiente para alocar " << args[0] << "!" << endl;
+            if(aux->second == argInt) break;
         }
     }
+    // caso exista uma posicao disponivel...
+    if(amount >= argInt)
+    {
+        ocupa(it, beginPos, amount, argInt, args[0]);
+    }
+    else
+    {
+        cout << "Espaco insuficiente para alocar " << args[0] << "!" << endl;
+    }
 }
+
+// deleta um cara
 void delElem(string args[2])
 {
     // buscando o id
@@ -252,9 +247,10 @@ void delElem(string args[2])
     }
 }
 
+// printa a lista de desocupados e a dos ocupados
 void exibe()
 {
-    cout << "============== DESOCUPADOS ================" << endl;
+    cout <<         "============== DESOCUPADOS ================" << endl;
     for(map<int,int>::iterator it = vDes.begin(); it != vDes.end(); it++)
     {
         cout << "POS: " << it->first << "\tQUANT: " << it->second << endl;
@@ -267,6 +263,7 @@ void exibe()
     cout << endl << endl;
 }
 
+// "a = b" atribui? sera? kk
 void atrib(string tokenKey, string args[2])
 {
     map<string, struct Ocupados>::iterator re = vOc.find(args[1]);
@@ -277,13 +274,7 @@ void atrib(string tokenKey, string args[2])
     }
 }
 
-/*
- *
- * receebe uma palavra chave e seus argumentos...
- * realiza a simulacao feita em vOc(ED que representea a memoria desocupada)
- * e vDes(ED que representa a memoria desocupada)
- *
-*/
+// realiza a simulacao feita em vOc(ED que representea a memoria desocupada) e vDes(ED que representa a memoria desocupada)
 void simulando(string tokenKey, string args[2])
 {
     // palavra chave new, aloca um pedaço de memoria do tamanho args[1] chamado pelo id args[0]
@@ -300,11 +291,11 @@ void simulando(string tokenKey, string args[2])
             case BEST:
                 newBest(args);
                 break;
-            // case WORST:
-            //     newWorst();
-            //     break;
+            case WORST:
+                newWorst(args);
+                break;
             default:
-                cout << "Modo do heap não conhecido!!!" << endl;
+                cout << "Modo do heap nao conhecido!!!" << endl;
         }
     }
     // palavra chave "del", apaga o espaco de memoria com o id = args[0]
@@ -349,7 +340,7 @@ void simulando(string tokenKey, string args[2])
 /*
  * separa as palavras chaves dos argumentos e chama a funcao simulando
  */
-int iTokens(string fname)
+bool iTokens(string fname)
 {
     /*  tokens  */
     ifstream file(fname);
@@ -364,25 +355,18 @@ int iTokens(string fname)
 
             string tokenArg[2];
 
-            //cout << tokenKey << " ";
-
             for(int i = 0; i < sizeKeyWord(tokenKey); i++)
             {
                 file >> tokenArg[i];
-                //cout << tokenArg[i] << " ";
             }
-
-            //cout << endl;
-
             simulando(tokenKey, tokenArg);
         }
 
         file.close();
-        return 1;
+        return true;
     }
     else
     {
-        return 0;
+        return false;
     }
-    /*          */
 }

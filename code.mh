@@ -1,10 +1,8 @@
 heap first
 new a 5
-new b 20
-new c 15
+new b 10
+new c 10
+e = a
 del a
-new a 5
-exibe
-del a
-del c
+new d 5
 exibe
